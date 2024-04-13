@@ -1,4 +1,5 @@
-# WALMART Project
+# Capstone Project
+# WALMART STORES SALES FORECASTING
 ![image](https://github.com/DASARIUDAYPRAKASH/Walmart-Project-Time-Series/assets/130547847/0d4e00c2-5f17-421a-b95d-a7d41b9eaf73)
 
 ## Table Of Contents
