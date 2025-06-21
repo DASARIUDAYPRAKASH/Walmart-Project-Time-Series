@@ -1,0 +1,241 @@
+
+gravity_books - 100 SQL Queries for Data Engineer Practice
+===========================================================
+
+Phase 1: Basic Queries (1–20)
+-----------------------------
+1. Get all authors' names.
+select author_name from author;
+
+2. List all books with more than 300 pages.
+select title from book
+where num_pages > 300;
+
+3. Find all books published after 2010.
+select title from book
+where year(publication_date) > '2010';
+
+
+4. Get the first 5 publishers sorted alphabetically.
+select publisher_name from publisher
+order by publisher_name;
+
+
+5. List distinct languages used in books.
+select distinct language_name from book_language;
+
+6. Show email IDs of all customers.
+select distinct email from customer;
+
+7. Find customers whose first name starts with "A".
+select first_name from customer
+where first_name like '%a';
+
+
+8. Get details of addresses in the city 'Delhi'.
+select * from address
+where city = 'delhi';
+
+9. Count how many books were published in 2020.
+select count(book_id) as total_books
+where year(publication_date) = '2020'
+group by book_id;
+
+10. Find books that have ISBN starting with '978'.
+select book_id from book
+where isbn13 like '978%';
+
+
+11. Show all countries in alphabetical order.
+select distinct country_name from country
+order by country_name;
+
+12. List the books along with their language name.
+select distinct b.title, l.language_name from book b
+inner join book_language l
+on b.language_id = l.language_id;
+
+13. Get book title and publisher name.
+select b.title, p.publisher_name from book b
+inner join publisher p
+on b.publisher_id = p.publisher_id;
+
+14. Find books that don’t have more than 200 pages.
+select distinct title from book
+where num_pages < 200;
+
+15. Show the most recently published book.
+select title, datediff(curdate(),publication_date) as days from book
+order by days limit 1;
+
+
+16. Get top 10 customers by ID.
+select customer_id from customer
+order by customer_id limit 10;
+
+17. List customers who don’t have an email.
+select concat(first_name, ' ', last_name) as full_name from customer
+where email is null;
+
+18. Show all publishers except 'Penguin'.
+select * from publisher
+where publisher_name <> 'Penguin';
+
+19. Find total number of authors.
+select count(author_id) as total_authors from author;
+
+20. Display books ordered by number of pages (descending).
+
+select title from book
+order by num_pages desc;
+
+Phase 2: Intermediate Queries (21–50)
+-------------------------------------
+21. Get number of books each author has written.
+select a.author_name, count(b.book_id) as total_books from book b
+inner join book_author ba
+on b.book_id = ba.book_id
+inner join author a
+on ba.author_id = a.author_id
+group by author_name;
+
+22. List number of books by each language.
+select count(b.book_id) as total_books, l.language_name from book b
+inner join book_language l
+on b.language_id = l.language_id
+group by l.language_name;
+
+23. Get total books by each publisher.
+select p.publisher_name, count(b.book_id) as total_books from book b
+inner join publisher p
+on b.publisher_id = p.publisher_id
+group by p.publisher_id;
+
+24. Show customer full name and their address.
+select 
+	concat(c.first_name, ' ', c.last_name) as full_Name,
+	a.street_number, a.street_name, a.city, cy.country_name
+from customer c
+inner join customer_address ca
+on c.customer_id = ca.customer_id
+inner join address a
+on ca.address_id = a.address_id
+inner join country cy
+on a.country_id = cy.country_id;
+	 
+
+25. Count customers from each country.
+select cy.country_name, count(customer_id) as total_customers
+from customer c
+inner join country cy
+on c.country_id = cy.country_id
+group by cy.country_name;
+
+26. Find customers who placed more than 5 orders.
+select 
+	concat(first_name, ' ', last_name) as full_name,
+	count(order_id) as total_orders from customer c
+inner join cust_order co
+on c.customer_id = co.customer_id
+group by c.customer_id
+having count(order_id) = 5;
+
+27. Calculate average cost per shipping method.
+select method_name, avg(cost) as average_cost from shipping_method
+group by method_name;
+
+28. List books that were never ordered.
+select ol.book_id from order_line ol
+left join order_history oh
+on ol.order_id = oh.order_id
+where oh.order_id is null;
+
+29. Count number of lines per order.
+select count(line_id) as total_lines, order_id from order_line
+group by order_id;
+
+30. Get top 5 best-selling books.
+select b.title, ol.book_id, count(ol.order_id) as total_orders
+from book b
+inner join order_line ol
+on b.book_id = ol.book_id
+group by ol.book_id
+order by total_orders desc limit 5;
+
+31. Find the total amount of orders per customer.
+select concat(c.first_name, ' ', c.last_name) as full_name,
+    -> sum(ol.price) as total_price
+    -> from customer c
+    -> inner join cust_order co
+    -> on c.customer_id = co.customer_id
+    -> inner join order_line ol
+    -> on co.order_id = ol.order_id
+    -> group by c.customer_id
+
+32. Show shipping method used most frequently.
+select method_name, count(method_name) as method from shipping_method
+order by method desc limit 1;
+
+33. List the most recent order for each customer.
+select
+    -> concat(c.first_name, ' ', c.last_name) as full_name,
+    -> datediff(curdate(),co.order_date) as recent_days
+    -> from customer c
+    -> inner join cust_order co
+    -> on c.customer_id = co.customer_id
+    -> group by co.customer_id
+    -> order by recent_days limit 1;
+
+34. Calculate number of orders per month.
+35. Show average price per book per publisher.
+36. Show total and average number of pages grouped by language.
+37. Find customers who live in cities starting with 'B' and placed orders.
+38. Show order ID, book title, and order date.
+39. Get country-wise order distribution.
+40. List all customers and their current address status.
+
+Phase 3: Advanced Queries (51–80)
+---------------------------------
+51. Show running total of orders per customer.
+52. Find first order date for each customer.
+53. Rank customers by total order value.
+54. Use a CTE to get average book price per publisher.
+55. Get top 3 best-selling books per language.
+56. List books along with their most recent order date.
+57. Use a window function to rank books by pages within each language.
+58. Calculate average order price per customer using a subquery.
+59. Find order(s) with highest line total.
+60. Get customer who ordered the most books in one order.
+61. Show book with highest number of authors.
+62. List order statuses with number of transitions per order.
+63. Find orders that changed status more than 3 times.
+64. Get books that were not ordered in last 1 year.
+65. List publishers whose books have never been ordered.
+66. Find orders shipped to a country other than the customer’s address.
+67. List books where publication_date is missing or null.
+68. Get monthly growth in number of orders (month-over-month).
+69. Use CASE to classify books as short/medium/long based on pages.
+70. Find customers who placed their last order over a year ago.
+
+Phase 4: Expert Queries (81–100)
+--------------------------------
+81. Validate foreign keys by checking orphaned book_language references.
+82. Find duplicate customers by email.
+83. Create a pivot-like report showing count of orders by shipping method and month.
+84. Detect if multiple books share the same ISBN.
+85. Identify inactive customers (no orders, no address).
+86. Calculate LTV (lifetime value) of each customer.
+87. Identify books ordered by the same customer more than once.
+88. Get order status trail for each order in chronological order.
+89. List top 10 customers by total amount and total quantity of books.
+90. Analyze order delays: Time between order and last status update.
+91. Extract year/month from order date and count orders.
+92. Get % of orders with more than 1 book.
+93. Find the book with maximum price variance.
+94. Use CTEs to list publisher-wise book count and average price.
+95. Get count of orders where price is above book's average price.
+96. Detect mismatch between address status and shipping address.
+97. Identify customers who changed address after first order.
+98. Use self-join to find books by same author published by different publishers.
+99. Check if any address ID is reused across customers (shared address).
+100. Get total sales, average order value, and total books sold.
